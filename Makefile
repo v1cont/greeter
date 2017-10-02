@@ -35,4 +35,4 @@ clean:
 	rm -rf libGtkGreeter.so *~
 
 dist:
-	tar -Jvcf greeter.tar.xz greet.c greet.h greeter.conf Makefile README.md
+	tar -Jvcf greeter.tar.xz greet.c greet.h greeter.conf Makefile README.md run_xdm.sh
