@@ -236,7 +236,7 @@ load_users ()
         }
     }
   endpwent ();
-  g_hash_table_destroy (uht);
+  //g_hash_table_destroy (uht);
 
   /* add special users */
   gtk_list_store_append (store, &iter);
