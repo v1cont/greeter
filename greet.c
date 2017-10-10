@@ -219,17 +219,24 @@ load_users ()
   GtkTreeIter iter;
   GtkEntryCompletion *compl;
   struct passwd *pwd;
+  GHashTable *uht;
 
-  store = gtk_list_store_new (1, G_TYPE_STRING);
+  uht = g_hash_new (g_str_hash, g_str_equal);
+  store = gtk_list_store_new (1, G_TYPE_STRING);  
   while (pwd = getpwent ())
     {
       if (pwd->pw_uid >= cfg->min_uid)
         {
-          gtk_list_store_append (store, &iter);
-          gtk_list_store_set (store, &iter, 0, pwd->pw_name, -1);
+          if (!g_hash_table_contains (uht, pwd->pw_name))
+            {
+              g_hash_table_add (uht, pwd->pw_name);        
+              gtk_list_store_append (store, &iter);
+              gtk_list_store_set (store, &iter, 0, pwd->pw_name, -1);
+            }
         }
     }
   endpwent ();
+  g_hash_table_destroy (uht);
 
   /* add special users */
   gtk_list_store_append (store, &iter);
