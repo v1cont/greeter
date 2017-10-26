@@ -221,7 +221,7 @@ load_users ()
   struct passwd *pwd;
   GHashTable *uht;
 
-  uht = g_hash_new (g_str_hash, g_str_equal);
+  uht = g_hash_table_new (g_str_hash, g_str_equal);
   store = gtk_list_store_new (1, G_TYPE_STRING);  
   while (pwd = getpwent ())
     {
