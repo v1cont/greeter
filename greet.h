@@ -38,6 +38,8 @@
 #define PASSLABEL   "<i>Password:</i>"
 #define SESSLABEL   "<i>Session:</i>"
 
+#define ICONNAME    "computer"
+
 #define REBOOT_CMD     "/sbin/reboot"
 #define POWEROFF_CMD   "/sbin/poweroff"
 #define SUSPEND_CMD    "echo mem > /sys/power/state"
@@ -56,6 +58,7 @@ typedef struct {
   gchar *pwd_lbl;
   gchar *sess_lbl;
   gchar *session;
+  gchar *icon;
   gchar *path;
   gint borders;
   gchar *reboot_cmd;
