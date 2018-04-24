@@ -136,6 +136,8 @@ parse_config ()
   cfg->pwd_lbl = PASSLABEL;
   cfg->sess_lbl = SESSLABEL;
 
+  cfg->icon = ICONNAME;
+
   cfg->borders = BORDERS;
 
   cfg->allow_root = TRUE;
@@ -169,6 +171,8 @@ parse_config ()
                 cfg->sess_lbl = g_key_file_get_locale_string (kf, "Interface", "Session", NULL, NULL);
               if (g_key_file_has_key (kf, "Interface", "Borders", NULL))
                 cfg->borders = g_key_file_get_integer (kf, "Interface", "Borders", NULL);
+              if (g_key_file_has_key (kf, "Interface", "Icon", NULL))
+                cfg->icon = g_key_file_get_string (kf, "Interface", "Icon", NULL);
               cfg->rcfile = g_key_file_get_string (kf, "Interface", "RcFile", NULL);
             }
 
@@ -478,7 +482,7 @@ create_dialog ()
   gtk_box_pack_start (GTK_BOX (b), wb, TRUE, TRUE, 0);
 
   /* welcome */
-  l = gtk_image_new_from_icon_name ("display", GTK_ICON_SIZE_DIALOG);
+  l = gtk_image_new_from_icon_name (cfg->icon, GTK_ICON_SIZE_DIALOG);
   gtk_box_pack_start (GTK_BOX (wb), l, TRUE, FALSE, 2);
   l = gtk_label_new (NULL);
   gtk_misc_set_alignment (GTK_MISC (l), 1.0, 0.5);
