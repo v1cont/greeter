@@ -139,6 +139,7 @@ parse_config ()
   cfg->icon = ICONNAME;
 
   cfg->borders = BORDERS;
+  cfg->width = -1;
 
   cfg->allow_root = TRUE;
 
@@ -171,6 +172,8 @@ parse_config ()
                 cfg->sess_lbl = g_key_file_get_locale_string (kf, "Interface", "Session", NULL, NULL);
               if (g_key_file_has_key (kf, "Interface", "Borders", NULL))
                 cfg->borders = g_key_file_get_integer (kf, "Interface", "Borders", NULL);
+              if (g_key_file_has_key (kf, "Interface", "Width", NULL))
+                cfg->width = g_key_file_get_integer (kf, "Interface", "Width", NULL);
               if (g_key_file_has_key (kf, "Interface", "Icon", NULL))
                 cfg->icon = g_key_file_get_string (kf, "Interface", "Icon", NULL);
               cfg->rcfile = g_key_file_get_string (kf, "Interface", "RcFile", NULL);
@@ -468,6 +471,8 @@ create_dialog ()
   /* window */
   w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_position (GTK_WINDOW (w), GTK_WIN_POS_CENTER_ALWAYS);
+  if (cfg->width > 0)
+    gtk_window_set_default_size (GTK_WINDOW (w), cfg->width, -1);
 
   f = gtk_frame_new (NULL);
   gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_ETCHED_IN);

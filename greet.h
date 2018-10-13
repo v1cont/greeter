@@ -61,6 +61,7 @@ typedef struct {
   gchar *icon;
   gchar *path;
   gint borders;
+  gint width;
   gchar *reboot_cmd;
   gchar *poweroff_cmd;
   gchar *suspend_cmd;
