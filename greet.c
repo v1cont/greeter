@@ -635,6 +635,7 @@ GreetUser (struct display * d,
     {
       GdkWindow *root = gdk_get_default_root_window ();
 
+#if !USE_GTK3
       /* load specific settings */
       if (cfg->rcfile)
         {
@@ -648,6 +649,7 @@ GreetUser (struct display * d,
                 }
             }
         }
+#endif
 
       /* set cursor */
       gdk_window_set_cursor (root, gdk_cursor_new_for_display (gd, GDK_LEFT_PTR));
@@ -659,13 +661,22 @@ GreetUser (struct display * d,
       gtk_widget_grab_default (w);
       gtk_widget_grab_focus (le);
 
+#if USE_GTK3
+      GdkSeat *seat = gdk_display_get_default_seat (gdk_display_get_default ());
+      gdk_seat_grab (seat, gtk_widget_get_window (w), GDK_SEAT_CAPABILITY_ALL, TRUE, NULL, NULL, NULL, NULL);
+#else
       gdk_keyboard_grab (gtk_widget_get_window (w), FALSE, GDK_CURRENT_TIME);
+#endif
 
       gtk_main ();
 
       gtk_widget_destroy (w);
 
+#if USE_GTK3
+      gdk_seat_ungrab (seat);
+#else    
       gdk_keyboard_ungrab (GDK_CURRENT_TIME);
+#endif
       gdk_x11_ungrab_server ();
 
       Debug ("Greet loop finished\n");

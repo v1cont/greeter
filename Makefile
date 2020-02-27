@@ -10,7 +10,7 @@ CC = gcc
 OPT_FLAGS = -O2 -pipe -Wall -s
 
 ifeq ($(GTK3),1)
-CFLAGS += $(OPT_FLAFS) -fPIC $(shell pkg-config --cflags gtk+-3.0)
+CFLAGS += $(OPT_FLAFS) -fPIC $(shell pkg-config --cflags gtk+-3.0) -DUSE_GTK3=1
 LIBS += -shared $(shell pkg-config --libs gtk+-3.0)
 else
 CFLAGS += $(OPT_FLAFS) -fPIC $(shell pkg-config --cflags gtk+-2.0)
