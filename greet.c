@@ -30,7 +30,7 @@
 
 static ConfigData *cfg = NULL;
 
-static GtkWidget *le, *pe, *se;
+static GtkWidget *win, *le, *pe, *se;
 static gchar *uname = NULL;
 static gchar *sess_cmd = NULL;
 
@@ -345,6 +345,7 @@ username_cb (GtkWidget * w, gpointer d)
   if (!name || !name[0])
     {
       gtk_widget_grab_focus (le);
+      gtk_window_set_focus (GTK_WINDOW (win), le);
       return;
     }
 
@@ -362,6 +363,7 @@ username_cb (GtkWidget * w, gpointer d)
     }
 
   gtk_widget_grab_focus (pe);
+  gtk_window_set_focus (GTK_WINDOW (win), pe);
 }
 
 static void
@@ -457,27 +459,31 @@ clear:
 #endif
   gtk_entry_set_text (GTK_ENTRY (le), "");
   gtk_entry_set_text (GTK_ENTRY (pe), "");
+
   gtk_widget_grab_focus (le);
+  gtk_window_set_focus (GTK_WINDOW (win), le);
+  
+  load_users ();
 }
 
-static GtkWidget *
+static void
 create_dialog ()
 {
-  GtkWidget *w, *f, *b, *wb, *t, *l;
+  GtkWidget *f, *b, *wb, *t, *l;
   GtkListStore *ss;
   GtkCellRenderer *r;
   gchar *wlc;
 
   /* window */
-  w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_position (GTK_WINDOW (w), GTK_WIN_POS_CENTER_ALWAYS);
+  win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER_ALWAYS);
   if (cfg->width > 0)
-    gtk_window_set_default_size (GTK_WINDOW (w), cfg->width, -1);
+    gtk_window_set_default_size (GTK_WINDOW (win), cfg->width, -1);
 
   f = gtk_frame_new (NULL);
   gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_ETCHED_IN);
   gtk_container_set_border_width (GTK_CONTAINER (f), 2);
-  gtk_container_add (GTK_CONTAINER (w), f);
+  gtk_container_add (GTK_CONTAINER (win), f);
 
   b = gtk_vbox_new (FALSE, 2);
   gtk_container_set_border_width (GTK_CONTAINER (b), cfg->borders);
@@ -544,14 +550,13 @@ create_dialog ()
   load_users ();
   load_sessions ();
 
-  return w;
+  gtk_widget_show_all (win);
 }
 
 greet_user_rtn
 GreetUser (struct display * d,
            Display ** dpy, struct verify_info * verify, struct greet_info * greet, struct dlfuncs * dlfuncs)
 {
-  GtkWidget *w;
   GdkDisplay *gd;
   struct passwd *p;
   gchar **env;
@@ -655,22 +660,27 @@ GreetUser (struct display * d,
       gdk_window_set_cursor (root, gdk_cursor_new_for_display (gd, GDK_LEFT_PTR));
 
       /* create login window */
-      w = create_dialog ();
-      gtk_widget_show_all (w);
-
-      gtk_widget_grab_default (w);
-      gtk_widget_grab_focus (le);
+      create_dialog ();
 
 #if USE_GTK3
-      GdkSeat *seat = gdk_display_get_default_seat (gdk_display_get_default ());
-      gdk_seat_grab (seat, gtk_widget_get_window (w), GDK_SEAT_CAPABILITY_ALL, TRUE, NULL, NULL, NULL, NULL);
+      GdkSeat *seat = gdk_display_get_default_seat (gd);
+      gdk_seat_grab (seat, gtk_widget_get_window (win), GDK_SEAT_CAPABILITY_ALL, TRUE, NULL, NULL, NULL, NULL);
 #else
-      gdk_keyboard_grab (gtk_widget_get_window (w), FALSE, GDK_CURRENT_TIME);
+      gdk_keyboard_grab (gtk_widget_get_window (win), FALSE, GDK_CURRENT_TIME);
 #endif
+
+      gtk_window_present (GTK_WINDOW (win));
+
+      gtk_widget_set_can_focus (win, TRUE);
+      gtk_widget_set_can_default (win, TRUE);
+
+      gtk_widget_grab_default (win);
+      gtk_widget_grab_focus (le);
+      gtk_window_set_focus (GTK_WINDOW (win), le);
 
       gtk_main ();
 
-      gtk_widget_destroy (w);
+      gtk_widget_destroy (win);
 
 #if USE_GTK3
       gdk_seat_ungrab (seat);
