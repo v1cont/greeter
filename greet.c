@@ -292,41 +292,32 @@ load_sessions ()
       fullname = g_build_filename (SESSIONDIR, filename, NULL);
       if (g_key_file_load_from_file (kf, fullname, 0, NULL))
         {
-          gchar *type;
+          gchar *name, *icon, *cmd;
+          GtkTreeIter it;
+          GdkPixbuf *pb = NULL;
 
-          type =  g_key_file_get_locale_string (kf, "Desktop Entry", "Type", NULL, NULL);
+          name = g_key_file_get_locale_string (kf, "Desktop Entry", "Name", NULL, NULL);
+          icon = g_key_file_get_string (kf, "Desktop Entry", "Icon", NULL);
+          cmd = g_key_file_get_string (kf, "Desktop Entry", "Exec", NULL);
 
-          if (type && strcasecmp (type, "xsession") == 0)
+          if (icon)
             {
-              gchar *name, *icon, *cmd;
-              GtkTreeIter it;
-              GdkPixbuf *pb = NULL;
-
-              name = g_key_file_get_locale_string (kf, "Desktop Entry", "Name", NULL, NULL);
-              icon = g_key_file_get_string (kf, "Desktop Entry", "Icon", NULL);
-              cmd = g_key_file_get_string (kf, "Desktop Entry", "Exec", NULL);
-
-              if (icon)
-                {
-                  if (g_file_test (icon, G_FILE_TEST_EXISTS))
-                    pb = gdk_pixbuf_new_from_file_at_size (icon, 16, 16, NULL);
-                  else
-                    pb = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (), icon, 16, 0, NULL);
-                }
-
-              gtk_list_store_append (ss, &it);
-              gtk_list_store_set (ss, &it, 0, pb, 1, name, 2, cmd, -1);
-
-              if (g_ascii_strncasecmp (filename, cfg->session, len) == 0)
-                as = s;
-              s++;
-
-              g_free (name);
-              g_free (icon);
-              g_free (cmd);
+              if (g_file_test (icon, G_FILE_TEST_EXISTS))
+                pb = gdk_pixbuf_new_from_file_at_size (icon, 16, 16, NULL);
+              else
+                pb = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (), icon, 16, 0, NULL);
             }
-          else
-            Debug ("File %s is not a xsession\n", fullname);
+
+          gtk_list_store_append (ss, &it);
+          gtk_list_store_set (ss, &it, 0, pb, 1, name, 2, cmd, -1);
+
+          if (g_ascii_strncasecmp (filename, cfg->session, len) == 0)
+            as = s;
+          s++;
+
+          g_free (name);
+          g_free (icon);
+          g_free (cmd);
         }
 
       g_free (fullname);
