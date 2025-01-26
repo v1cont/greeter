@@ -25,7 +25,7 @@ endif
 all: libGtkGreeter.so
 
 libGtkGreeter.so: greet.c greet.h
-	$(CC) -o $@ $(CFLAGS) -DSESSIONDIR="\"$(sessdir)\"" -DSYSCONFDIR="\"$(confdir)\"" $(LIBS) $^
+	$(CC) -o $@ $(CFLAGS) -DSESSIONDIR="\"$(sessdir)\"" -DSYSCONFDIR="\"$(confdir)\"" $(LIBS) $<
 
 install:
 	install -m 0755 -D libGtkGreeter.so $(DESTDIR)$(xdmdir)/libGtkGreeter.so
